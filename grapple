@@ -1,0 +1,111 @@
+#!/usr/bin/python
+import sys, os, re, errno, optparse
+
+def shouldSkip(dirname, filename, options):
+    if filename in ['.svn', 'SCCS',
+                    'CVS', '.sconsign']:
+        return True
+    if (filename.endswith('~')
+        or filename.startswith('.#')
+        or (filename.startswith('#')
+            and filename.endswith('#'))):
+        return True
+
+    if dirname is None:
+        path = filename
+    else:
+        path = os.path.join(dirname, filename)
+    for pattern in options.exclude:
+        if re.search(pattern, path):
+            return True
+
+def callback(state, dirname, fnames):
+    fnames[:] = [fname for fname in fnames
+                 if not shouldSkip(dirname, fname, state['options'])]
+
+    for filename in fnames:
+        if dirname is None:
+            path = filename
+        else:
+            path = os.path.join(dirname, filename)
+        matches = 0
+        try:
+            f=file(path)
+        except IOError, e:
+            if e.errno == errno.EISDIR:
+                pass
+            else:
+                raise
+        else:
+            lineNumber = 0
+            for line in f:
+                lineNumber += 1
+                if state['regex'].search(line):
+                    if state['options'].files_with_matches:
+                        print path
+                        break
+                    matches += 1
+                    sys.stdout.write('%s:%d:%s' % (path, lineNumber, line))
+
+            state['matches'] += matches
+            if matches:
+                state['matching-files'] += 1
+
+def grapple(path, state):
+    if not shouldSkip(None, path, state['options']):
+        if os.path.isdir(path):
+            os.path.walk(path, callback, state)
+        else:
+            callback(state, None, [path])
+
+def main():
+    parser = optparse.OptionParser()
+    parser.set_usage('%prog [options] REGEX [PATH..]')
+    parser.add_option('-i', '--ignore-case',
+                      action='store_true',
+                      help='ignore case distinctions')
+    parser.add_option('-e', '--exclude',
+                      action='append',
+                      default=[],
+                      help='files or directories that match PATTERN will be skipped',
+                      metavar='PATTERN')
+    parser.add_option('-l', '--files-with-matches',
+                      action='store_true',
+                      help='only print FILE names containing no match')
+##     parser.add_option('-L', '--files-without-match',
+##                       action='store_true',
+##                       help='only print FILE names containing no match')
+    # -h
+    options, args = parser.parse_args()
+
+    if not args:
+        parser.print_usage()
+        sys.exit(1)
+
+    flags = 0
+    if options.ignore_case:
+        flags = flags | re.IGNORECASE
+
+    regex = re.compile(args[0], flags)
+    state = {'regex': regex,
+             'options': options,
+             'matches': 0,
+             'matching-files': 0,
+             }
+    if args[1:]:
+        for path in args[1:]:
+            grapple(path, state)
+    else:
+        for filename in os.listdir('.'):
+            grapple(filename, state)
+
+    if not options.files_with_matches:
+        print '# matches: %d' % state['matches']
+    print '# matching-files: %d' % state['matching-files']
+            
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(1)
