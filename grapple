@@ -40,7 +40,7 @@ def callback(state, dirname, fnames):
         try:
             f=file(path)
         except IOError, e:
-            if e.errno == errno.EISDIR:
+            if e.errno in [errno.EISDIR, errno.ENOENT]:
                 pass
             else:
                 raise
