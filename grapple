@@ -11,7 +11,8 @@ def shouldSkip(dirname, filename, options):
         or filename.startswith('.#')
         or (filename.startswith('#')
             and filename.endswith('#'))
-        or filename.endswith('.pyc')):
+        or filename.endswith('.pyc')
+        or filename.endswith('.pyo')):
         return True
 
     if dirname is None:
