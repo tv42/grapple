@@ -2,13 +2,16 @@
 import sys, os, re, errno, optparse
 
 def shouldSkip(dirname, filename, options):
-    if filename in ['.svn', 'SCCS',
-                    'CVS', '.sconsign']:
+    if filename in ['.svn',
+                    'SCCS', 'BitKeeper',
+                    'CVS',
+                    '.sconsign']:
         return True
     if (filename.endswith('~')
         or filename.startswith('.#')
         or (filename.startswith('#')
-            and filename.endswith('#'))):
+            and filename.endswith('#'))
+        or filename.endswith('.pyc')):
         return True
 
     if dirname is None:
