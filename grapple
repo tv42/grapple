@@ -5,7 +5,8 @@ def shouldSkip(dirname, filename, options):
     if filename in ['.svn',
                     'SCCS', 'BitKeeper',
                     'CVS',
-                    '.sconsign']:
+                    '.sconsign',
+                    '_trial_temp']:
         return True
     if (filename.endswith('~')
         or filename.startswith('.#')
