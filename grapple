@@ -17,6 +17,8 @@ def shouldSkip(dirname, filename, options):
         or filename.endswith('.elc')
         or filename.endswith('.ps')
         or filename.endswith('.pdf')
+        or filename.endswith('.png')
+        or filename.endswith('.dia')
         ):
         return True
 
@@ -44,7 +46,7 @@ def callback(state, dirname, fnames):
             if e.errno in [errno.EISDIR, errno.ENOENT]:
                 pass
             else:
-                raise
+                print >>sys.stderr, "%s: %s" % (sys.argv[0], e)
         else:
             lineNumber = 0
             for line in f:
