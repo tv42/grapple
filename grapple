@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import sys, os, re, errno, optparse
+import sys, os, re, errno, optparse, gzip
 
 def shouldSkip(dirname, filename, options):
     if filename in ['.svn',
@@ -13,14 +13,21 @@ def shouldSkip(dirname, filename, options):
     if (filename.endswith('~')
         or filename.startswith('.#')
         or (filename.startswith('#')
-            and filename.endswith('#'))
-        or filename.endswith('.pyc')
-        or filename.endswith('.pyo')
-        or filename.endswith('.elc')
-        or filename.endswith('.ps')
-        or filename.endswith('.pdf')
-        or filename.endswith('.png')
-        or filename.endswith('.dia')
+            and filename.endswith('#'))):
+        return True
+
+    nogz = filename
+    if nogz.endswith('.gz'):
+        nogz = filename[:-len('.gz')]
+
+    if (nogz.endswith('.pyc')
+        or nogz.endswith('.pyo')
+        or nogz.endswith('.elc')
+        or nogz.endswith('.ps')
+        or nogz.endswith('.dvi')
+        or nogz.endswith('.pdf')
+        or nogz.endswith('.png')
+        or nogz.endswith('.dia')
         ):
         return True
 
@@ -42,8 +49,13 @@ def callback(state, dirname, fnames):
         else:
             path = os.path.join(dirname, filename)
         matches = 0
+
+        if filename.endswith('.gz'):
+            opener = gzip.open
+        else:
+            opener = file
         try:
-            f=file(path)
+            f=opener(path)
         except IOError, e:
             if e.errno in [errno.EISDIR, errno.ENOENT]:
                 pass
