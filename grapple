@@ -3,8 +3,10 @@ import sys, os, re, errno, optparse
 
 def shouldSkip(dirname, filename, options):
     if filename in ['.svn',
+                    '.git',
                     'SCCS', 'BitKeeper',
                     'CVS',
+                    '_darcs',
                     '.sconsign',
                     '_trial_temp']:
         return True
