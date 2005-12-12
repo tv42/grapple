@@ -8,7 +8,8 @@ def shouldSkip(dirname, filename, options):
                     'CVS',
                     '_darcs',
                     '.sconsign',
-                    '_trial_temp']:
+                    '_trial_temp',
+                    'dropin.cache']:
         return True
     if (filename.endswith('~')
         or filename.startswith('.#')
@@ -27,7 +28,12 @@ def shouldSkip(dirname, filename, options):
         or nogz.endswith('.dvi')
         or nogz.endswith('.pdf')
         or nogz.endswith('.png')
+        or nogz.endswith('.jpg')
         or nogz.endswith('.dia')
+        or nogz.endswith('.o')
+        or nogz.endswith('.a')
+        or nogz.endswith('.so')
+        or nogz.endswith('.ko')
         ):
         return True
 
