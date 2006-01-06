@@ -72,10 +72,10 @@ def callback(state, dirname, fnames):
             for line in f:
                 lineNumber += 1
                 if state['regex'].search(line):
+                    matches += 1
                     if state['options'].files_with_matches:
                         print path
                         break
-                    matches += 1
                     sys.stdout.write('%s:%d:%s' % (path, lineNumber, line))
 
             state['matches'] += matches
