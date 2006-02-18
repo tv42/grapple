@@ -69,14 +69,17 @@ def callback(state, dirname, fnames):
                 print >>sys.stderr, "%s: %s" % (sys.argv[0], e)
         else:
             lineNumber = 0
-            for line in f:
-                lineNumber += 1
-                if state['regex'].search(line):
-                    matches += 1
-                    if state['options'].files_with_matches:
-                        print path
-                        break
-                    sys.stdout.write('%s:%d:%s' % (path, lineNumber, line))
+            try:
+                for line in f:
+                    lineNumber += 1
+                    if state['regex'].search(line):
+                        matches += 1
+                        if state['options'].files_with_matches:
+                            print path
+                            break
+                        sys.stdout.write('%s:%d:%s' % (path, lineNumber, line))
+            except IOError, e:
+                print >>sys.stderr, "%s: %s: %s" % (sys.argv[0], e, path)
 
             state['matches'] += matches
             if matches:
