@@ -7,6 +7,7 @@ def shouldSkip(dirname, filename, options):
                     'SCCS', 'BitKeeper',
                     'CVS',
                     '_darcs',
+                    '.bzr',
                     '.sconsign',
                     '_trial_temp',
                     'dropin.cache']:
