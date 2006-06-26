@@ -80,7 +80,9 @@ def callback(state, dirname, fnames):
                         if state['options'].files_with_matches:
                             print path
                             break
-                        sys.stdout.write('%s:%d:%s' % (path, lineNumber, line))
+                        if state['options'].filenames:
+                            line = '%s:%d:%s' % (path, lineNumber, line)
+                        sys.stdout.write(line)
             except IOError, e:
                 print >>sys.stderr, "%s: %s: %s" % (sys.argv[0], e, path)
 
@@ -109,10 +111,14 @@ def main():
     parser.add_option('-l', '--files-with-matches',
                       action='store_true',
                       help='only print FILE names containing no match')
+    parser.add_option('', '--no-filename',
+                      action='store_false',
+                      default=True,
+                      dest='filenames',
+                      help='do not show file names')
 ##     parser.add_option('-L', '--files-without-match',
 ##                       action='store_true',
 ##                       help='only print FILE names containing no match')
-    # -h
     options, args = parser.parse_args()
 
     if not args:
