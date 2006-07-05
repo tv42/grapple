@@ -37,6 +37,11 @@ def shouldSkip(dirname, filename, options):
         or nogz.endswith('.ko')
         or nogz.endswith('.gif')
         or nogz.endswith('.psd')
+        or nogz.endswith('.mov')
+        or nogz.endswith('.avi')
+        or nogz.endswith('.wmv')
+        or nogz.endswith('.ogg')
+        or nogz.endswith('.mp3')
         ):
         return True
 
