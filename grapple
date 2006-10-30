@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import sys, os, re, errno, optparse, gzip
+import sys, os, re, errno, optparse, gzip, stat
 
 def shouldSkip(dirname, filename, options):
     if filename in ['.svn',
@@ -42,6 +42,7 @@ def shouldSkip(dirname, filename, options):
         or nogz.endswith('.wmv')
         or nogz.endswith('.ogg')
         or nogz.endswith('.mp3')
+        or nogz.endswith('.swf')
         ):
         return True
 
@@ -52,6 +53,14 @@ def shouldSkip(dirname, filename, options):
     for pattern in options.exclude:
         if re.search(pattern, path):
             return True
+
+    st = os.lstat(path)
+    if (stat.S_ISSOCK(st.st_mode)
+        or stat.S_ISBLK(st.st_mode)
+        or stat.S_ISCHR(st.st_mode)
+        or stat.S_ISFIFO(st.st_mode)
+        ):
+        return True
 
 def callback(state, dirname, fnames):
     fnames[:] = [fname for fname in fnames
