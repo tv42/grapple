@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import sys, os, re, errno, optparse, gzip, stat
+import sys, os, re, errno, optparse, gzip, bz2, stat
 
 def shouldSkip(dirname, filename, options):
     if filename in ['.svn',
@@ -21,6 +21,8 @@ def shouldSkip(dirname, filename, options):
     nogz = filename
     if nogz.endswith('.gz'):
         nogz = filename[:-len('.gz')]
+    elif nogz.endswith('.bz2'):
+        nogz = filename[:-len('.bz2')]
 
     if (nogz.endswith('.pyc')
         or nogz.endswith('.pyo')
@@ -75,6 +77,8 @@ def callback(state, dirname, fnames):
 
         if filename.endswith('.gz'):
             opener = gzip.open
+        elif filename.endswith('.bz2'):
+            opener = bz2.BZ2File
         else:
             opener = file
         try:
