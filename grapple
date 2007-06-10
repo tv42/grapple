@@ -9,6 +9,7 @@ def shouldSkip(dirname, filename, options):
                     '_darcs',
                     '.bzr',
                     '.sconsign',
+                    '.sconsign.dblite',
                     '_trial_temp',
                     'dropin.cache']:
         return True
