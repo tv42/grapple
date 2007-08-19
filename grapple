@@ -11,7 +11,9 @@ def shouldSkip(dirname, filename, options):
                     '.sconsign',
                     '.sconsign.dblite',
                     '_trial_temp',
-                    'dropin.cache']:
+                    'dropin.cache',
+                    '.hg',
+                    ]:
         return True
     if (filename.endswith('~')
         or filename.startswith('.#')
@@ -46,6 +48,8 @@ def shouldSkip(dirname, filename, options):
         or nogz.endswith('.ogg')
         or nogz.endswith('.mp3')
         or nogz.endswith('.swf')
+        or nogz.endswith('.db')
+        or nogz.endswith('.pcap')
         ):
         return True
 
