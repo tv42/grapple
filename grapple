@@ -50,6 +50,10 @@ def shouldSkip(dirname, filename, options):
         or nogz.endswith('.swf')
         or nogz.endswith('.db')
         or nogz.endswith('.pcap')
+        or nogz.endswith('.pickle')
+        or nogz.endswith('.hi')
+        or nogz.endswith('.egg')
+        or nogz.endswith('.egg-info')
         ):
         return True
 
