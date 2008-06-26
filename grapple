@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import sys, os, re, errno, optparse, gzip, bz2, stat
+import sys, os, re, errno, optparse, gzip, bz2, stat, string
 
 def shouldSkip(dirname, filename, options):
     if filename in ['.svn',
@@ -73,6 +73,23 @@ def shouldSkip(dirname, filename, options):
         ):
         return True
 
+def write(line):
+    try:
+        sys.stdout.write(line)
+    except IOError, e:
+        if e.errno == errno.EPIPE:
+            try:
+                sys.stdout.close()
+            except IOError, e:
+                if e.errno == errno.EPIPE:
+                    pass
+                else:
+                    raise
+            sys.exit(0)
+        else:
+            print >>sys.stderr, "%s: %s" % (sys.argv[0], e)
+            sys.exit(1)
+
 def callback(state, dirname, fnames):
     fnames[:] = [fname for fname in fnames
                  if not shouldSkip(dirname, fname, state['options'])]
@@ -96,22 +113,38 @@ def callback(state, dirname, fnames):
             if e.errno in [errno.EISDIR, errno.ENOENT]:
                 pass
             else:
-                print >>sys.stderr, "%s: %s" % (sys.argv[0], e)
+                print >>sys.stderr, "%s: %s: %s" % (sys.argv[0], e, path)
         else:
-            lineNumber = 0
             try:
-                for line in f:
+                lineNumber = 0
+                while True:
+                    try:
+                        line = f.readline()
+                    except IOError, e:
+                        print >>sys.stderr, "%s: %s: %s" % (sys.argv[0], e, path)
+                        break
+                    if not line:
+                        break
+
                     lineNumber += 1
                     if state['regex'].search(line):
                         matches += 1
                         if state['options'].files_with_matches:
-                            print path
+                            write('%s\n' % path)
                             break
                         if state['options'].filenames:
-                            line = '%s:%d:%s' % (path, lineNumber, line)
-                        sys.stdout.write(line)
-            except IOError, e:
-                print >>sys.stderr, "%s: %s: %s" % (sys.argv[0], e, path)
+                            printable = True
+                            for c in line:
+                                if c not in string.printable:
+                                    printable = False
+                                    break
+                            if printable:
+                                line = '%s:%d:%s' % (path, lineNumber, line)
+                            else:
+                                line = '%s:%d\n' % (path, lineNumber)
+                        write(line)
+            finally:
+                f.close()
 
             state['matches'] += matches
             if matches:
@@ -172,7 +205,7 @@ def main():
     if not options.files_with_matches:
         print '# matches: %d' % state['matches']
     print '# matching-files: %d' % state['matching-files']
-            
+
 
 if __name__ == '__main__':
     try:
