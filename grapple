@@ -1,6 +1,9 @@
 #!/usr/bin/python
 import sys, os, re, errno, optparse, gzip, bz2, stat, string
 
+#TODO recursive mode should ignore ENOENTs, those are just races
+#between listdir() and open()
+
 def shouldSkip(dirname, filename, options):
     if filename in ['.svn',
                     '.git',
