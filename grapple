@@ -16,6 +16,7 @@ def shouldSkip(dirname, filename, options):
                     '_trial_temp',
                     'dropin.cache',
                     '.hg',
+                    '_go_.6',
                     ]:
         return True
     if (filename.endswith('~')
@@ -56,7 +57,6 @@ def shouldSkip(dirname, filename, options):
         or nogz.endswith('.pickle')
         or nogz.endswith('.hi')
         or nogz.endswith('.egg')
-        or nogz.endswith('.egg-info')
         ):
         return True
 
