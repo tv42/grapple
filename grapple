@@ -97,7 +97,7 @@ def callback(state, dirname, fnames):
     fnames[:] = [fname for fname in fnames
                  if not shouldSkip(dirname, fname, state['options'])]
 
-    for filename in fnames:
+    for filename in sorted(fnames):
         if dirname is None:
             path = filename
         else:
@@ -202,7 +202,7 @@ def main():
         for path in args[1:]:
             grapple(path, state)
     else:
-        for filename in os.listdir('.'):
+        for filename in sorted(os.listdir('.')):
             grapple(filename, state)
 
     if not options.files_with_matches:
