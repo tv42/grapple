@@ -50,6 +50,7 @@ def shouldSkip(dirname, filename, options):
         or nogz.endswith('.avi')
         or nogz.endswith('.wmv')
         or nogz.endswith('.ogg')
+        or nogz.endswith('.ogv')
         or nogz.endswith('.mp3')
         or nogz.endswith('.swf')
         or nogz.endswith('.db')
